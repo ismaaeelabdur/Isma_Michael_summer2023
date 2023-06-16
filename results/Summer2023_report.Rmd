@@ -1,0 +1,57 @@
+---
+title: "Summer2023_report"
+output: html_document
+date: '2023-06-16'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggpubr)
+library(readxl)
+```
+
+```{r}
+Freq_plot <- function(data, y_freq){
+(p_freq <- data %>% 
+    ggplot(aes(x = fct_relevel(genotype, 'C', 'KO'), y = get(y_freq))) +
+    geom_point(aes(color = Experiment, shape = genotype)) +
+    #stat_compare_means(method = "t.test", label = 'p.format') +
+    geom_signif(comparisons = list(c('C', 'KO')),test = "t.test", 
+               map_signif_level = TRUE, size = 0.4, textsize = 3.5) +
+    stat_summary(geom = "pointrange", fun.data = mean_se, size = 0.25) +
+    facet_wrap(~hpi, strip.position = 'bottom', scales = 'free_x', nrow = 1)+
+    xlab('Hours post infection') +
+    ylab(as.character(y_freq)) +
+    ggtitle(as.character(y_freq)) +
+    guides(fill = 'none', color = 'none') +
+    theme(panel.spacing = unit(0, 'lines'),
+         panel.background = element_rect(fill = 'white'),
+         axis.text = element_text(size = 16),
+         axis.title = element_text(size = 20),
+         panel.grid.major = 
+           element_line(color = 'grey', size = 0.1),
+         strip.background = element_blank(),
+         strip.placement = 'outside',
+         strip.text.x = element_text( size = 16),
+         legend.position = 'none',
+         axis.line = element_line()))
+}
+```
+
+# Background Data
+This summer, we are continuing work on the role of sptlc2 in cells during infection, but before new data is introduced, this is a background of data that ws produced last year. Last summer (2022), we examined the role of sptlc2 in BV2 cells during Mycobacterium smegmatis infection. We performed several assays looking at apoptosis, phagocytosis, and we also performed microscopy experiments. Part of this document shows the experiments we performed.
+
+```{r reading_combined_excel}
+data <- read_excel(path = "../data/Processed_data/combined_percentinfected.xlsx", na = c('NA','N/A'), col_names = TRUE)
+head(data, n = 5)
+```
+
+```{r}
+Freq_plot(data, "% infected")
+ggsave(filename = "IA_Combined_PercentInfected.png")
+```
+
+In an attempt to discover whether phagocytosis is impacted during M. smegmatis infection, BV2 cells were infected through a spinfection with GFP smeg. Through analyzing the percent of infected cells, we found that there is no significant different in GFP smeg uptake in both 1 hpi and 18 hpi. Although there is no significant difference, this may be due to the experimental duplicate that was performed and the varying results. To address this, another experiment will be performed at 1hpi because of the nature of phagocytosis and how it is the process that is mostly happening at 1hpi and not 18hpi.
+
+ 
