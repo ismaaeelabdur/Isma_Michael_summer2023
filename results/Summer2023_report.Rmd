@@ -40,7 +40,7 @@ Freq_plot <- function(data, y_freq){
 ```
 
 # Background Data
-This summer, we are continuing work on the role of sptlc2 in cells during infection, but before new data is introduced, this is a background of data that ws produced last year. Last summer (2022), we examined the role of sptlc2 in BV2 cells during Mycobacterium smegmatis infection. We performed several assays looking at apoptosis, phagocytosis, and we also performed microscopy experiments. Part of this document shows the experiments we performed.
+This summer, we are continuing work on the role of sptlc2 in cells during infection, but before new data is introduced, this is a background of data that ws produced last year. Last summer (2022), we examined the role of sptlc2 in BV2 cells during Mycobacterium smegmatis infection. We performed several assays looking at apoptosis, phagocytosis, and we also performed microscopy experiments. This section of the report shows the experiments we performed.
 
 ```{r reading_combined_excel}
 data <- read_excel(path = "../data/Processed_data/combined_percentinfected.xlsx", na = c('NA','N/A'), col_names = TRUE)
@@ -52,6 +52,21 @@ Freq_plot(data, "% infected")
 ggsave(filename = "IA_Combined_PercentInfected.png")
 ```
 
-In an attempt to discover whether phagocytosis is impacted during M. smegmatis infection, BV2 cells were infected through a spinfection with GFP smeg. Through analyzing the percent of infected cells, we found that there is no significant different in GFP smeg uptake in both 1 hpi and 18 hpi. Although there is no significant difference, this may be due to the experimental duplicate that was performed and the varying results. To address this, another experiment will be performed at 1hpi because of the nature of phagocytosis and how it is the process that is mostly happening at 1hpi and not 18hpi.
+In an attempt to discover whether phagocytosis is impacted during M. smegmatis infection, BV2 cells were infected through a spinfection with GFP smeg. The figures below were also infected with the same method. Through analyzing the percent of infected cells, we found that there is no statistically significant difference in GFP smeg uptake in both 1 hpi and 18 hpi. Although there is no significant difference, this may be due to the experimental duplicate that was performed and the varying results. To address this, another experiment will be performed at 1hpi because of the nature of phagocytosis and how it is the process that is mostly happening at 1hpi and not 18hpi.
 
+```{r}
+Freq_plot(data, "% apoptosing_infected")
+ggsave(filename = "IA_Combined_Percentapoptosing_infected.png")
+```
+In an attempt to discover whether there is a difference in apoptosis between complemented and KO BV2 cells, a FLICA stain was implemented on BV2 cells to meausure caspace 3/7 through flow cytometry. Through analyzing the percent of infected cells that are apoptosing, we found that there is a significant difference in apoptosis between complemented and KO cells at 18 hpi but not at 1 hpi.
+
+```{r}
+Freq_plot(data, "GFP_MFI")
+ggsave(filename = "IA_Combined_GFP_MFI.png")
+```
  
+ To measure another way of whether the GFP smeg was phagocytosed by the BV2 cells and the bacterial burden the cells experience, the MFI of GFP was measured
+```{r}
+Freq_plot(data, "FLICA_MFI_infected")
+ggsave(filename = "IA_Combined_FLICA_MFI_infected.png")
+```
