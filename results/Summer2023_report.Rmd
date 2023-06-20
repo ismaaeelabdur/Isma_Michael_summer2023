@@ -70,3 +70,14 @@ ggsave(filename = "IA_Combined_GFP_MFI.png")
 Freq_plot(data, "FLICA_MFI_infected")
 ggsave(filename = "IA_Combined_FLICA_MFI_infected.png")
 ```
+
+```{r}
+library(ggplot2)
+growth <- read.table('IA7_smeg_growth_curve.xlsx', sep=',', header=TRUE)
+p <- ggplot(growth, aes(x=timepoint, y=od))
+p <- p + geom_point()
+p + geom_line()
+ggplot(growth, aes(x=timepoint, y=od, color=condition)) +
+    geom_point() +
+    geom_line()
+```
