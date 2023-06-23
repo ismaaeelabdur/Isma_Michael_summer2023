@@ -2,6 +2,8 @@
 title: "Summer2023_report"
 output: html_document
 date: '2023-06-16'
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -9,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggpubr)
 library(readxl)
+library(rstatix)
 ```
 
 ```{r}
@@ -43,7 +46,7 @@ Freq_plot <- function(data, y_freq){
 This summer, we are continuing work on the role of sptlc2 in cells during infection, but before new data is introduced, this is a background of data that ws produced last year. Last summer (2022), we examined the role of sptlc2 in BV2 cells during Mycobacterium smegmatis infection. We performed several assays looking at apoptosis, phagocytosis, and we also performed microscopy experiments. This section of the report shows the experiments we performed.
 
 ```{r reading_combined_excel}
-data <- read_excel(path = "../data/Processed_data/combined_percentinfected.xlsx", na = c('NA','N/A'), col_names = TRUE)
+data <- read_excel(path = "./data/Processed_data/combined_percentinfected.xlsx", na = c('NA','N/A'), col_names = TRUE)
 head(data, n = 5)
 ```
 
@@ -72,12 +75,65 @@ ggsave(filename = "IA_Combined_FLICA_MFI_infected.png")
 ```
 
 ```{r}
-library(ggplot2)
-growth <- read.table('IA7_smeg_growth_curve.xlsx', sep=',', header=TRUE)
-p <- ggplot(growth, aes(x=timepoint, y=od))
-p <- p + geom_point()
-p + geom_line()
-ggplot(growth, aes(x=timepoint, y=od, color=condition)) +
-    geom_point() +
-    geom_line()
+growth <- read_excel(path = "./data/Processed_data/IA7_smeg_growth_curve.xlsx", na = c('NA','N/A'), col_names = TRUE)
+head(growth, n = 5)
+growth %>%
+  group_by(hours, condition) %>% 
+  dplyr::summarise(mean = mean(od), 
+                   se = sd(od)/sqrt(sum(!is.na(od)))) %>%
+  ungroup()
+
+stat.test.0hr <- growth %>%
+  filter(hours == 0, condition %in% c("vehicle", "DPPC")) %>% 
+  t_test(od ~ condition) %>%
+  add_significance()
+stat.test.0hr
+
+stat.test.2hr <- growth %>%
+  filter(hours == 2, condition %in% c("vehicle", "DPPC")) %>% 
+  t_test(od ~ condition) %>%
+  add_significance()
+stat.test.2hr
+
+stat.test.4hr <- growth %>%
+  filter(hours == 4, condition %in% c("vehicle", "DPPC")) %>% 
+  t_test(od ~ condition) %>%
+  add_significance()
+stat.test.4hr
+
+stat.test.6hr <- growth %>%
+  filter(hours == 6, condition %in% c("vehicle", "DPPC")) %>% 
+  t_test(od ~ condition) %>%
+  add_significance()
+stat.test.6hr
+
+stat.test.8hr <- growth %>%
+  filter(hours == 8, condition %in% c("vehicle", "DPPC")) %>% 
+  t_test(od ~ condition) %>%
+  add_significance()
+stat.test.8hr
+
+stat.test.10hr <- growth %>%
+  filter(hours == 10, condition %in% c("vehicle", "DPPC")) %>% 
+  t_test(od ~ condition) %>%
+  add_significance()
+stat.test.10hr
+
+stat.test.12hr <- growth %>%
+  filter(hours == 12, condition %in% c("vehicle", "DPPC")) %>% 
+  t_test(od ~ condition) %>%
+  add_significance()
+stat.test.12hr
+
+annotations <- c(stat.test.0hr$p.signif, stat.test.2hr$p.signif, stat.test.4hr$p.signif, stat.test.6hr$p.signif, stat.test.8hr$p.signif, stat.test.10hr$p.signif, stat.test.12hr$p.signif)
+
+ggplot(growth, aes(x=hours, y=od, group=condition)) +
+  stat_summary(
+        fun = mean,
+        geom='line',
+        aes(color=condition)) +
+    geom_point(aes(color=condition)) +
+    scale_x_continuous(breaks = c(0,2,4,6,8,10,12,14)) +
+    stat_summary(geom = "pointrange", fun.data = mean_se, size = 0.25, color = 'black') +
+    geom_signif(annotations = annotations, y_position = c(1.5,1.5,1.5,1.5,1.5,1.5,1.5), xmin = c(-0.5,1.5,3.5,5.5,7.5,9.5,11.5), xmax = c(0.5,2.5,4.5,6.5,8.5,10.5,12.5), size = 0.25, textsize = 3.5)
 ```
